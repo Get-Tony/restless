@@ -144,7 +144,7 @@ dmypy.json
 **/*test__*/
 
 # external git repositories
-**/packages/lib_its3c
+**/git_repos
 
 # pip test files
 **/pip_remove.txt
