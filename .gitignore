@@ -148,3 +148,32 @@ dmypy.json
 
 # pip test files
 **/pip_remove.txt
+
+# Config files
+**/config_*.json
+**/config_*.yaml
+**/config_*.yml
+**/config_*.ini
+**/*.cfg
+
+# Host files
+**/hosts
+**/inventory.ini
+**/inventory.yaml
+**/inventory.yml
+**/inventory.json
+
+# Ansible Vault files
+**/vault_*.yaml
+**/vault_*.yml
+**/vault_*.json
+
+# Ansible vars files
+**/vars_*.yaml
+**/vars_*.yml
+**/vars_*.json
+**/group_vars/*
+**/host_vars/*
+
+# Allow demo files
+!**/demo_*.*
