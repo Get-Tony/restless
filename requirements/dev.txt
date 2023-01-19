@@ -2,4 +2,4 @@
 
 # Editable install with no version control (lib_standard==0.2.2)
 # https://github.com/get-tony/lib_standard.git
--e ./packages/lib_standard[dev]
+-e ./external_packages/lib_standard[dev]
