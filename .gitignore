@@ -175,5 +175,8 @@ dmypy.json
 **/group_vars/*
 **/host_vars/*
 
+# Data files
+**/data/*
+
 # Allow demo files
 !**/demo_*.*
