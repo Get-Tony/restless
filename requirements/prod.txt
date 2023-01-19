@@ -1,0 +1,5 @@
+-r base.txt
+
+# Production dependencies - Wheel install (lib_standard==0.2.2)
+# https://github.com/get-tony/lib_standard.git
+packages/lib_standard/dist/lib_standard-0.2.2-py3-none-any.whl
