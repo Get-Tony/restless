@@ -10,7 +10,7 @@ An Ansible management tool.
     - [For development](#for-development)
     - [For production](#for-production)
   - [Demo sources](#demo-sources)
-    - [data/roles/common](#datarolescommon)
+    - [demo\_data/roles/common](#demo_datarolescommon)
 
 ## License
 
@@ -35,7 +35,7 @@ From the root directory of the package (where the toml file is found), run:
 
 ## Demo sources
 
-### data/roles/common
+### demo_data/roles/common
 
 The `common` role was generated with `ansible-galaxy init common` from within the roles directory.
 `ansible-galaxy` comes packaged with Ansible.
