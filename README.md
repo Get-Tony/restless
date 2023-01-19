@@ -1,7 +1,7 @@
 
 # Restless
 
-An Ansible environment management tool.
+An Ansible management tool.
 
 - [Restless](#restless)
   - [License](#license)
