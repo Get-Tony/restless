@@ -1,3 +1,3 @@
 -r base.txt
 
-git+https://github.com/get-tony/lib_standard@dev#egg=lib_standard[dev]==1.0.0
+git+https://github.com/get-tony/lib_standard@main#egg=lib_standard[dev]
