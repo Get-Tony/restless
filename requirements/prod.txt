@@ -1,4 +1,4 @@
-git+https://github.com/get-tony/lib_standard@main#egg=lib_standard>=1.1.5
+git+https://github.com/get-tony/lib_standard@main#egg=lib_standard>=1.2.0
 ansible==7.1.0
 ansible-lint==6.11.0
 molecule==4.0.4
