@@ -1,7 +1,7 @@
 """Main module for Restless."""
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
 
-
+# %%
 import os
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -9,6 +9,7 @@ from pathlib import Path
 
 from lib_standard import EnhancedConfigParser
 
+# %%
 SETTINGS_FILE = os.environ.get("SERVICE_SETTINGS_FILE", "settings.ini")
 
 
@@ -45,3 +46,6 @@ class AnsibleService:
     def save(self) -> None:
         """Save state."""
         raise NotImplementedError("Service.save() must be implemented.")
+
+
+# %%
