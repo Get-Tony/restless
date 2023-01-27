@@ -183,3 +183,6 @@ dmypy.json
 
 # Temporary files
 **/tmp_*.*
+
+# Poetry
+**/poetry.lock

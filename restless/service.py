@@ -2,13 +2,14 @@
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
 
 
+import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
 from lib_standard import EnhancedConfigParser
 
-SETTINGS_FILE = "settings.ini"
+SETTINGS_FILE = os.environ.get("SERVICE_SETTINGS_FILE", "settings.ini")
 
 
 @dataclass
@@ -24,11 +25,7 @@ class AnsibleService:
 
     # No init
     active: bool = field(default=True, init=False, repr=True)
-
-    # No init or repr
-    last_loaded_on: datetime | None = field(
-        default=None, init=False, repr=False
-    )
+    last_loaded_on: str | None = field(default=None, init=False, repr=True)
 
     def load(self) -> None:
         """Load state."""
@@ -43,11 +40,8 @@ class AnsibleService:
             )
         settings_path: Path = Path(self.config_path) / SETTINGS_FILE
         self.config.read(settings_path)
-        self.last_loaded_on = datetime.now()
+        self.last_loaded_on = str(datetime.now())
 
     def save(self) -> None:
         """Save state."""
         raise NotImplementedError("Service.save() must be implemented.")
-
-
-config = EnhancedConfigParser()
