@@ -10,7 +10,7 @@ test:
 	python -m pytest -vv --cov=restless --cov-report term-missing
 
 format:
-	black --line-length 79 restless
+	black --line-length 79 --check --diff .
 
 lint:
 	pylint restless

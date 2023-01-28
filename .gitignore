@@ -186,3 +186,7 @@ dmypy.json
 
 # Poetry
 **/poetry.lock
+
+# sqlite
+**/*.sqlite
+**/*.db
