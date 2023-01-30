@@ -14,8 +14,9 @@ format:
 
 lint:
 	pylint restless
-	mypy restless
+	# mypy --strict --disallow-untyped-calls --disallow-untyped-defs --disallow-incomplete-defs --disallow-untyped-decorators .
+	mypy .
 	pycodestyle restless
 	pydocstyle restless
 
-all: install-dev test format lint
+all: install

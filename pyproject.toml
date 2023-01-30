@@ -5,23 +5,28 @@ description = "Ansible interactions"
 authors = ["Get-Tony <Get-Tony@outlook.com>"]
 license = "MIT"
 readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 ansible = "^7.1.0"
-lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", branch = "main" }
 ansible-runner = "^2.3.1"
+lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
 ansible-builder = "^1.2.0"
-pylint = "^2.15.10"
-mypy = "^0.991"
 black = "^22.12.0"
+ipykernel = "^6.20.2"
+mypy = "^0.991"
+pylint = "^2.15.10"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 pydocstyle = "^6.3.0"
 pycodestyle = "^2.10.0"
-ipykernel = "^6.20.2"
 
 [build-system]
 requires = ["poetry-core"]
