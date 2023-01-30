@@ -9,9 +9,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 ansible = "^7.1.0"
-lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", tag = "v1.2.1" }
+lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", branch = "main" }
+ansible-runner = "^2.3.1"
 
 [tool.poetry.group.dev.dependencies]
+ansible-builder = "^1.2.0"
 pylint = "^2.15.10"
 mypy = "^0.991"
 black = "^22.12.0"

@@ -1,7 +1,7 @@
-"""SQLite3 database abstraction layer."""
+"""SQLite3 database abstraction layer for service."""
+__author__ = "Anthony Pagan <get-tony@outlook.com>"
 
 import sqlite3
-from contextlib import contextmanager
 from enum import Enum
 from pathlib import Path
 
@@ -21,21 +21,7 @@ class Queries(Enum):
     DELETE_SERVICE = """DELETE FROM services WHERE name = ?"""
 
 
-@contextmanager
-def db_connect(db_file: str | Path | None = None):
-    """
-    Yield a database connection.
-
-    Args:
-        db_file (str | Path | None): database file
-            Defaults to ":memory:".
-    """
-    conn = sqlite3.connect(db_file or ":memory:")
-    yield conn
-    conn.close()
-
-
-def create_services_table(db_conn: sqlite3.Connection):
+def create_services_table(db_conn: sqlite3.Connection) -> None:
     """
     Create the services table.
 

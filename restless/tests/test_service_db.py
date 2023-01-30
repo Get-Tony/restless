@@ -1,17 +1,10 @@
-"""pytest tests for the database module."""
+"""Tests for the service module DB."""
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
 
 import pytest
 
-from restless.db import (
-    create_services_table,
-    db_connect,
-    delete_service,
-    insert_service,
-    select_service,
-    select_services,
-    update_service,
-)
+from restless.db_connect import db_connect
+from restless.service import db
 
 
 @pytest.fixture(scope="function")
@@ -46,7 +39,7 @@ def memory_conn_with_tables():
         sqlite3.Connection: database connection
     """
     with db_connect() as conn:
-        create_services_table(conn)
+        db.create_services_table(conn)
         yield conn
 
 
@@ -59,7 +52,7 @@ def test_create_services_table(
     Args:
         db_conn (sqlite3.Connection): database connection
     """
-    create_services_table(db_conn)
+    db.create_services_table(db_conn)
     assert "services" in [
         t[0]
         for t in db_conn.execute(
@@ -77,8 +70,8 @@ def test_insert_service(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    insert_service(memory_conn_with_tables, "service1", "dir1", True)
-    service = select_service(memory_conn_with_tables, "service1")
+    db.insert_service(memory_conn_with_tables, "service1", "dir1", True)
+    service = db.select_service(memory_conn_with_tables, "service1")
     assert service == ("service1", "dir1", 1)
 
 
@@ -91,8 +84,8 @@ def test_select_service(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    insert_service(memory_conn_with_tables, "service1", "dir1", True)
-    service = select_service(memory_conn_with_tables, "service1")
+    db.insert_service(memory_conn_with_tables, "service1", "dir1", True)
+    service = db.select_service(memory_conn_with_tables, "service1")
     assert service == ("service1", "dir1", 1)
 
 
@@ -105,9 +98,9 @@ def test_select_services(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    insert_service(memory_conn_with_tables, "service1", "dir1", True)
-    insert_service(memory_conn_with_tables, "service2", "dir2", False)
-    services = select_services(memory_conn_with_tables)
+    db.insert_service(memory_conn_with_tables, "service1", "dir1", True)
+    db.insert_service(memory_conn_with_tables, "service2", "dir2", False)
+    services = db.select_services(memory_conn_with_tables)
     assert services == [("service1", "dir1", 1), ("service2", "dir2", 0)]
 
 
@@ -120,9 +113,9 @@ def test_update_service(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    insert_service(memory_conn_with_tables, "service1", "dir1", True)
-    update_service(memory_conn_with_tables, "service1", False)
-    service = select_service(memory_conn_with_tables, "service1")
+    db.insert_service(memory_conn_with_tables, "service1", "dir1", True)
+    db.update_service(memory_conn_with_tables, "service1", False)
+    service = db.select_service(memory_conn_with_tables, "service1")
     assert service == ("service1", "dir1", 0)
 
 
@@ -135,9 +128,9 @@ def test_delete_service(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    insert_service(memory_conn_with_tables, "service1", "dir1", True)
-    delete_service(memory_conn_with_tables, "service1")
-    service = select_service(memory_conn_with_tables, "service1")
+    db.insert_service(memory_conn_with_tables, "service1", "dir1", True)
+    db.delete_service(memory_conn_with_tables, "service1")
+    service = db.select_service(memory_conn_with_tables, "service1")
     assert service is None
 
 
@@ -150,6 +143,6 @@ def test_select_service_not_exists(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    create_services_table(memory_conn_with_tables)
-    service = select_service(memory_conn_with_tables, "service1")
+    db.create_services_table(memory_conn_with_tables)
+    service = db.select_service(memory_conn_with_tables, "service1")
     assert service is None

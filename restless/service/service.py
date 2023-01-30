@@ -1,4 +1,4 @@
-"""Main module for Restless."""
+"""Service."""
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
 
 from dataclasses import dataclass, field
@@ -16,22 +16,20 @@ class Service:
     settings: EnhancedConfigParser = field(
         default_factory=EnhancedConfigParser, init=True, repr=True
     )
-    _config_file_name: str = field(
-        default="settings.ini", init=False, repr=False
-    )
-    _config_section: str = field(default="SERVICE", init=False, repr=False)
+    _file_name: str = field(default="settings.ini", init=False, repr=False)
+    _section: str = field(default="SERVICE", init=False, repr=False)
 
     @property
     def is_active(self) -> bool:
         """Check if the service is active."""
         return self.settings.getboolean(
-            self._config_section, "active", fallback=False
+            self._section, "active", fallback=False
         )
 
     @property
     def config_file(self) -> Path:
         """Return Path obj for config file."""
-        return Path(self.directory) / self._config_file_name
+        return Path(self.directory) / self._file_name
 
     def load(self) -> None:
         """Load settings."""
@@ -41,10 +39,9 @@ class Service:
             )
         temp_parser = EnhancedConfigParser()
         temp_parser.read(self.config_file)
-        if self._config_section not in self.settings:
+        if self._section not in self.settings:
             raise KeyError(
-                "%s section missing from: %s" % self._config_section,
-                self.config_file,
+                f"{self._section} section missing from: {self.config_file}"
             )
         self.settings.read(self.config_file)
 
