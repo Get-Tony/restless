@@ -6,17 +6,17 @@ install-dev:
 	pip install --upgrade pip &&\
 		pip install -r requirements/dev.txt
 
-test:
+test: lint
 	python -m pytest -vv --cov=restless --cov-report term-missing
 
 format:
 	black --line-length 79 --check --diff .
 
-lint:
-	pylint restless
-	# mypy --strict --disallow-untyped-calls --disallow-untyped-defs --disallow-incomplete-defs --disallow-untyped-decorators .
-	mypy .
-	pycodestyle restless
+lint: format
+	# mypy --strict --disallow-untyped-calls --disallow-untyped-defs --disallow-incomplete-defs --disallow-untyped-decorators restless
+	mypy restless
 	pydocstyle restless
+	pycodestyle restless
+	pylint restless
 
 all: install
