@@ -9,8 +9,6 @@ An process management tool.
   - [Installation](#installation)
     - [For development](#for-development)
     - [For production](#for-production)
-  - [Sources](#sources)
-    - [demo\_data/roles/common](#demo_datarolescommon)
 
 ## License
 
@@ -32,10 +30,3 @@ From the root directory of the package (where the README file is found), run:
 ### For production
 
 > ```pip install -r requirements/prod.txt```
-
-## Sources
-
-### demo_data/roles/common
-
-The `common` role was generated with `ansible-galaxy init common` from within the roles directory.
-`ansible-galaxy` comes packaged with Ansible.
