@@ -18,7 +18,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Python 3.10.0 (or higher)
 - Ansible 7.1.0 (or higher)
-- lib_standard 1.1.5 (or higher) - see [github.com/get-tony/lib_standard](https://github.com/get-tony/lib_standard)
+- lib_standard 1.2.5 (or higher) - see [github.com/get-tony/lib_standard](https://github.com/get-tony/lib_standard)
 
 ## Installation
 
