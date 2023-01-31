@@ -2,7 +2,7 @@
 
 import pytest
 
-from restless.ansible import create_service
+from restless.ansible_funks import create_service_dir
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +17,7 @@ def base_path(tmp_path_factory):
 def test_create_service_dir(base_path):  # pylint: disable=redefined-outer-name
     """Create a directory for a service."""
     service_name = "test_service"
-    create_service(service_name, base_path)
+    create_service_dir(service_name, base_path)
     assert (base_path / service_name).is_dir()
     assert (base_path / service_name / "env").is_dir()
     assert (base_path / service_name / "env" / "envvars").is_file()

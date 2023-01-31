@@ -15,10 +15,11 @@ classifiers = [
 python = "^3.10"
 ansible = "^7.1.0"
 ansible-runner = "^2.3.1"
+ansible-builder = "^1.2.0"
 lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", branch = "main" }
+gitpython = "^3.1.30"
 
 [tool.poetry.group.dev.dependencies]
-ansible-builder = "^1.2.0"
 black = "^22.12.0"
 ipykernel = "^6.20.2"
 mypy = "^0.991"

@@ -1,6 +1,5 @@
 """Ansible integration for Restless."""
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
-
 import os
 from pathlib import Path
 
@@ -33,7 +32,7 @@ DEFAULT_SERVICE_TREE = {
 }
 
 
-def create_service(
+def create_service_dir(
     name: str,
     services_dir: Path,
     tree_data: dict | None = None,
@@ -48,22 +47,12 @@ def create_service(
             create. If None, the default tree will be used. Defaults to None.
 
     Raises:
-        ValueError: name must be a non-empty string
-        ValueError: services_dir must be a valid directory Path
-        ValueError: tree_data must be a dictionary
         Exception: Failed to create service directory
         Exception: Failed to create directory
         Exception: Failed to create file
     """
     if tree_data is None:
         tree_data = DEFAULT_SERVICE_TREE
-
-    if not isinstance(name, str) or not name:
-        raise ValueError("'name' must be a non-empty string")
-    if not isinstance(services_dir, Path) or not services_dir.is_dir():
-        raise ValueError("'services_dir' must be a valid directory Path")
-    if not isinstance(tree_data, dict):
-        raise ValueError("'tree_data' must be a dictionary")
 
     services_path: Path = services_dir / name
     try:
