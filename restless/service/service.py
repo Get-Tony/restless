@@ -1,6 +1,8 @@
 """Service."""
 __author__ = "Anthony Pagan <get-tony@outlook.com>"
 
+
+from configparser import NoSectionError
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -27,58 +29,59 @@ class Service:
         )
 
     @property
-    def config_file(self) -> Path:
+    def settings_file(self) -> Path:
         """Return Path obj for config file."""
         return Path(self.directory) / self._file_name
 
-    def load(self) -> None:
-        """Load settings."""
-        if not self.config_file.is_file():
-            raise FileNotFoundError(
-                f"Config file not found: {self.config_file}"
-            )
-        temp_parser = EnhancedConfigParser()
-        temp_parser.read(self.config_file)
-        if self._section not in self.settings:
-            raise KeyError(
-                f"{self._section} section missing from: {self.config_file}"
-            )
-        self.settings.read(self.config_file)
 
-    def save(self) -> None:
-        """Save settings."""
-        with open(self.config_file, "w", encoding="utf-8") as file:
-            self.settings.write(file)
-
-
-def new_service(name: str, directory: str | Path) -> Service:
+def new_service(name: str, services_dir: str | Path) -> Service:
     """Create a new service.
 
     Args:
         name (str): service name
-        directory (str | Path): service directory
+        services_dir (str | Path): services directory
 
     Returns:
         Service: service instance
     """
-    service_obj = Service(name=name, directory=directory)
+    if not Path(services_dir).exists():
+        raise FileNotFoundError(
+            f"Services directory does not exist: {services_dir}"
+        )
+    service_path = Path(services_dir) / name.strip()
+    try:
+        service_path.mkdir(exist_ok=False)
+    except FileExistsError as err:
+        raise FileExistsError(
+            f"Service directory already exists: {service_path}"
+        ) from err
+    service_obj = Service(name=name, directory=service_path)
     service_obj.settings.read_dict(
         {"SERVICE": {"name": name, "active": "True"}}
     )
-    service_obj.config_file.parent.mkdir(parents=True, exist_ok=True)
-    service_obj.save()
+    with open(service_obj.settings_file, "w", encoding="utf-8") as config_file:
+        service_obj.settings.write(config_file)
     return service_obj
 
 
 def load_service(directory: str | Path) -> Service:
-    """Load an existing service.
-
-    Args:
-        directory (str | Path): service directory
-
-    Returns:
-        Service: service instance
-    """
+    """Load a service."""
     service_obj = Service(directory=directory)
-    service_obj.load()
+    service_obj.settings.read(service_obj.settings_file)
+    if not Path(service_obj.directory).is_dir():
+        raise FileNotFoundError(
+            f"Service directory does not exist: {service_obj.directory}"
+        )
+    if not service_obj.settings_file.exists():
+        raise FileNotFoundError(
+            f"Settings file does not exist: {service_obj.settings_file}"
+        )
+    if not service_obj.settings.has_section("SERVICE"):
+        raise NoSectionError("Service section must exist.")
+    if not service_obj.settings.has_option("SERVICE", "name"):
+        raise KeyError("Service.name must be set.")
+    if service_obj.settings.get("SERVICE", "name") == "":
+        raise ValueError("Service.name must not be empty.")
+
+    service_obj.name = service_obj.settings.get("SERVICE", "name")
     return service_obj

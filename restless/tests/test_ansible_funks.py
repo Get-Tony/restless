@@ -62,3 +62,11 @@ def test_create_service_dir(base_path):  # pylint: disable=redefined-outer-name
     assert (
         base_path / service_name / "project" / "roles" / "common" / "vars"
     ).is_dir()
+
+
+def test_service_dir_exists(base_path):  # pylint: disable=redefined-outer-name
+    """Raise an error if the service directory already exists."""
+    service_name = "test_service"
+    create_service_dir(service_name, base_path)
+    with pytest.raises(OSError):
+        create_service_dir(service_name, base_path)

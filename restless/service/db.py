@@ -6,7 +6,7 @@ from enum import Enum
 from pathlib import Path
 
 
-class Queries(Enum):
+class ServicesQueries(Enum):
     """SQLite3 Query enumeration."""
 
     CREATE_SERVICES_TABLE = """CREATE TABLE IF NOT EXISTS services(
@@ -29,7 +29,7 @@ def create_services_table(db_conn: sqlite3.Connection) -> None:
         db_conn (sqlite3.Connection): database connection
     """
     with db_conn:
-        db_conn.execute(Queries.CREATE_SERVICES_TABLE.value)
+        db_conn.execute(ServicesQueries.CREATE_SERVICES_TABLE.value)
 
 
 def insert_service(
@@ -49,7 +49,7 @@ def insert_service(
     """
     with db_conn:
         db_conn.execute(
-            Queries.INSERT_SERVICE.value, (name, directory, active)
+            ServicesQueries.INSERT_SERVICE.value, (name, directory, active)
         )
 
 
@@ -68,7 +68,7 @@ def select_service(
     """
     with db_conn:
         return db_conn.execute(
-            Queries.SELECT_SERVICE.value, (name,)
+            ServicesQueries.SELECT_SERVICE.value, (name,)
         ).fetchone()
 
 
@@ -83,7 +83,9 @@ def select_services(db_conn: sqlite3.Connection) -> list[tuple[str, str, int]]:
         list[tuple[str, str, int]]: service data
     """
     with db_conn:
-        return db_conn.execute(Queries.SELECT_SERVICES.value).fetchall()
+        return db_conn.execute(
+            ServicesQueries.SELECT_SERVICES.value
+        ).fetchall()
 
 
 def update_service(
@@ -98,7 +100,7 @@ def update_service(
         active (bool): service active status
     """
     with db_conn:
-        db_conn.execute(Queries.SET_ACTIVE.value, (active, name))
+        db_conn.execute(ServicesQueries.SET_ACTIVE.value, (active, name))
 
 
 def delete_service(db_conn: sqlite3.Connection, name: str) -> None:
@@ -110,4 +112,4 @@ def delete_service(db_conn: sqlite3.Connection, name: str) -> None:
         name (str): service name
     """
     with db_conn:
-        db_conn.execute(Queries.DELETE_SERVICE.value, (name,))
+        db_conn.execute(ServicesQueries.DELETE_SERVICE.value, (name,))
