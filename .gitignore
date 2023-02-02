@@ -181,8 +181,9 @@ dmypy.json
 # Allow demo files
 !**/demo_*.*
 
-# Temporary files
+# Temporary items
 **/tmp_*.*
+**/tmp_*/*
 
 # Poetry
 **/poetry.lock
