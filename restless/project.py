@@ -9,7 +9,7 @@ from pathlib import Path
 
 from restless import database, git_manager
 
-DEFAULT_SERVICE_TREE = {
+DEFAULT_PROJECT_TREE = {
     "env": {
         "envvars": "",
         "extravars": "",
@@ -154,15 +154,15 @@ class Project:
 
 def create_project_dir(
     name: str,
-    services_dir: Path,
+    projects_dir: Path,
     tree_data: dict | None = None,
 ) -> None:
     """
-    Create a new service directory and populate it with the default tree.
+    Create a project directory.
 
     Args:
         name (str): service name
-        services_dir (Path): path to the services directory
+        projects_dir (Path): path to projects directory
         tree_data (dict, optional): dictionary of directories and files to
             create. If None, the default tree will be used. Defaults to None.
 
@@ -172,9 +172,9 @@ def create_project_dir(
         Exception: Failed to create file
     """
     if tree_data is None:
-        tree_data = DEFAULT_SERVICE_TREE
+        tree_data = DEFAULT_PROJECT_TREE
 
-    services_path: Path = services_dir / name
+    services_path: Path = projects_dir / name
     try:
         services_path.mkdir(parents=True, exist_ok=False)
     except OSError as err:
