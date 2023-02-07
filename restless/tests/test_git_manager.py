@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from restless.git_funks import clone_repo
+from restless.git_manager import clone_repo
 
 TEST_REPO_URL = "https://github.com/Get-Tony/lib_standard"
 
