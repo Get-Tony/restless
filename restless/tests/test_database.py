@@ -38,7 +38,7 @@ def memory_conn_with_tables():
         sqlite3.Connection: database connection
     """
     with db.db_connect() as conn:
-        db.create_roles_table(conn)
+        db.create_tables(conn)
         yield conn
 
 
@@ -51,7 +51,7 @@ def test_create_roles_table(
     Args:
         db_conn (sqlite3.Connection): database connection
     """
-    db.create_roles_table(db_conn)
+    db.create_tables(db_conn)
     assert "roles" in [
         t[0]
         for t in db_conn.execute(
@@ -142,6 +142,6 @@ def test_select_role_not_exists(
     Args:
         memory_conn_with_tables (sqlite3.Connection): database connection
     """
-    db.create_roles_table(memory_conn_with_tables)
+    db.create_tables(memory_conn_with_tables)
     role = db.select_role(memory_conn_with_tables, "role1")
     assert role is None

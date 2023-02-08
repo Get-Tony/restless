@@ -7,33 +7,25 @@ import shutil
 import sqlite3
 from pathlib import Path
 
+import ansible_runner
+
 from restless import database, git_manager
 
 DEFAULT_PROJECT_TREE = {
-    "env": {
-        "envvars": "",
-        "extravars": "",
-        "passwords": "",
-        "cmdline": "",
-        "settings": "",
-        "ssh_key": "",
-    },
-    "inventory": {"hosts": ""},
+    "ansible.cfg": """[defaults]
+host_key_checking = False
+retry_files_enabled = False
+roles_path = ./project/roles
+""",
+    "inventory": {"hosts": "localhost ansible_connection=local"},
     "project": {
-        "roles": {
-            "common": {
-                "defaults": {},
-                "handlers": {},
-                "meta": {},
-                "README.md": "# Common Role\n",
-                "tasks": {
-                    "main.yml": "---\n",
-                },
-                "tests": {},
-                "vars": {},
-            }
-        },
-        "main.yml": "---\n",
+        "roles": {},
+        "main.yml": """---
+- name: Example
+  hosts: localhost
+  gather_facts: no
+  roles:
+""",
     },
 }
 
@@ -45,32 +37,43 @@ class Project:
         """Initialize the project."""
         self.db_file = db_file
         self.roles_dir = Path(self.db_file).parent / "project" / "roles"
+        self.name = Path(self.db_file).stem
 
     def load(self) -> None:
         """Load the application."""
         if not Path(self.db_file).exists():
             raise Exception("DB file does not exist. Run 'restless init'.")
-        try:
-            with database.db_connect(self.db_file) as db_conn:
-                roles = database.select_roles(db_conn)
-                for role_ in roles:
-                    print(f"Loading role: {role_['name']}")
-
-        except Exception as err:
-            raise Exception("Failed to load application.") from err
+        print(f"Loading project: {self.name}")
+        print(f"DB file: {self.db_file}")
+        print(f"Roles: {[role_['name'] for role_ in self.list_roles()]}")
+        print(f"Status: {self.git_roles_status()}")
 
     def init(self) -> None:
         """Initialize the application."""
         try:
-            Path(self.db_file).parent.mkdir(parents=True, exist_ok=True)
+            # Path(self.db_file).parent.mkdir(parents=True, exist_ok=True)
+            create_project_dir(Path(self.db_file).parent)
             with database.db_connect(self.db_file) as db_conn:
-                database.create_roles_table(db_conn)
+                database.create_tables(db_conn)
             self.roles_dir.mkdir(parents=True, exist_ok=True)
         except Exception as err:
             raise Exception("Failed to initialize application.") from err
 
     def add_role(self, name: str, repo_url: str) -> None:
         """Add a role."""
+        role_dir: Path = (
+            self.roles_dir / name.strip().replace(" ", "_").lower()
+        )
+        try:
+            print(f"Cloning repository: {repo_url}")
+            git_manager.clone_repo(
+                repo_url,
+                role_dir,
+            )
+        except FileExistsError as err:
+            raise FileExistsError(
+                f"Role directory already exists: {role_dir}."
+            ) from err
         try:
             with database.db_connect(self.db_file) as db_conn:
                 database.insert_role(
@@ -78,19 +81,22 @@ class Project:
                 )
         except sqlite3.IntegrityError as err:
             print(f"Failed to clone repository: {repo_url}. error: {err}")
-        try:
-            git_manager.clone_repo(
-                repo_url,
-                self.roles_dir / name.strip().replace(" ", "_").lower(),
-            )
-        except Exception as err:
-            if "fatal: destination path" in str(err):
-                raise FileExistsError(
-                    f"Failed to create repository directory: {self.roles_dir / name.strip().replace(' ', '_').lower()}."  # noqa: E501 pylint: disable=line-too-long
-                ) from err
-            raise Exception(
-                f"Failed to clone repository: {repo_url}."
-            ) from err
+        with database.db_connect(self.db_file) as db_conn:
+            roles = database.select_roles(db_conn)
+            if name not in [role["name"] for role in roles]:
+                print(f"Failed to add role: {name}.")
+                if Path(role_dir).exists():
+                    shutil.rmtree(role_dir)
+
+    def add_roles(self, roles: list[dict[str, str]]) -> None:
+        """Add roles."""
+        for role_ in roles:
+            try:
+                self.add_role(role_["name"], role_["repo_url"])
+            except (FileExistsError, sqlite3.IntegrityError) as err:
+                print(f"Failed to add role: {role_['name']}. error: {err}")
+                continue
+            print(f"Added role: {role_['name']}")
 
     def remove_role(self, name: str) -> None:
         """Remove a role."""
@@ -111,8 +117,17 @@ class Project:
         with database.db_connect(self.db_file) as db_conn:
             return database.select_roles(db_conn)
 
-    def update_role(self, name: str) -> None:
-        """Update a role."""
+    def remove_roles(self, role_list: list[str]) -> None:
+        """Remove roles."""
+        with database.db_connect(self.db_file) as db_conn:
+            known_roles = database.select_roles(db_conn)
+        for role in role_list:
+            if not any(role_["name"] == role for role_ in known_roles):
+                print(f"Role '{role}' does not exist.")
+                continue
+
+    def git_pull_role(self, name: str) -> None:
+        """Git pull a role."""
         with database.db_connect(self.db_file) as db_conn:
             role = database.select_role(db_conn, name)
         if not role:
@@ -122,21 +137,19 @@ class Project:
         except Exception as err:
             raise Exception(f"Failed to update role: {name}") from err
 
-    def update_roles(self) -> None:
-        """Update all roles."""
+    def git_pull_roles(self) -> None:
+        """Git pull all roles."""
         with database.db_connect(self.db_file) as db_conn:
             roles = database.select_roles(db_conn)
-        pulled_roles = []
         for role_ in roles:
-            print(f"Updating role: {role_['name']}")
+            print(f"Pulling role: {role_['name']}")
             try:
                 git_manager.pull_repo(Path(str(role_["directory"])))
-                pulled_roles.append(role_["name"])
             except Exception:  # pylint: disable=broad-except
                 continue
 
-    def roles_status(self) -> dict[str, list[str]]:
-        """Show status of roles."""
+    def git_roles_status(self) -> dict[str, list[str]]:
+        """Show Git status of roles."""
         with database.db_connect(self.db_file) as db_conn:
             roles = database.select_roles(db_conn)
         report: dict[str, list[str]] = {"clean": [], "dirty": []}
@@ -151,45 +164,55 @@ class Project:
                 report["dirty"].append(str(role_["name"]))
         return report
 
+    def run(self, playbook: str | Path | None = None):
+        """Run the project."""
+        if not Path(
+            playbook or Path(self.db_file).parent / "project" / "main.yml"
+        ).exists():
+            raise Exception(f"Playbook '{playbook}' does not exist.")
+        print(f"Running project: {self.name}")
+        try:
+            project_dir = Path(self.db_file).parent
+            return ansible_runner.run(
+                private_data_dir=project_dir,
+                playbook="main.yml",
+                inventory="inventory/hosts",
+                envvars={"ANSIBLE_CONFIG": "ansible.cfg"},
+            )
+        except Exception as err:  # pylint: disable=broad-except
+            raise Exception(f"Failed to run playbook: {playbook}") from err
+
 
 def create_project_dir(
-    name: str,
-    projects_dir: Path,
+    projects_dir: str | Path,
     tree_data: dict | None = None,
 ) -> None:
     """
     Create a project directory.
 
     Args:
-        name (str): service name
-        projects_dir (Path): path to projects directory
+        projects_dir (str | Path): path to project directory
         tree_data (dict, optional): dictionary of directories and files to
             create. If None, the default tree will be used. Defaults to None.
-
-    Raises:
-        OSError: Failed to create service directory
-        Exception: Failed to create directory
-        Exception: Failed to create file
     """
     if tree_data is None:
         tree_data = DEFAULT_PROJECT_TREE
 
-    services_path: Path = projects_dir / name
-    try:
-        services_path.mkdir(parents=True, exist_ok=False)
-    except OSError as err:
-        raise OSError(f"Failed to create service directory: {err}") from err
+    services_path: Path = Path(projects_dir)
+    services_path.mkdir(parents=True, exist_ok=True)
 
     def create_subdirectories_and_files(inner_key, inner_value):
         if isinstance(inner_value, dict):
             os.makedirs(inner_key, exist_ok=True)
 
             for sub_key, sub_value in inner_value.items():
-                sub_key = inner_key / sub_key
+                sub_key = Path(inner_key) / sub_key
                 create_subdirectories_and_files(sub_key, sub_value)
         elif isinstance(inner_value, str):
-            with open(inner_key, "w", encoding="utf-8") as file:
-                file.write(inner_value)
+            if not Path(inner_key).is_file():
+                print(f"Creating file: {inner_key} {inner_value}")
+                with open(Path(inner_key), "w", encoding="utf-8") as file:
+                    file.write(inner_value)
 
     for base_key, base_value in tree_data.items():
         create_subdirectories_and_files(services_path / base_key, base_value)

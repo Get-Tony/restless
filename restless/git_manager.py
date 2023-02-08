@@ -20,17 +20,22 @@ def clone_repo(
         branch (str, optional): branch to checkout. Defaults to None.
 
     Raises:
-        FileNotFoundError: Failed to create repository directory,
-            missing parent directory.
+        FileExistsError: Failed to create repository directory, already exists.
         Exception: Failed to clone repository
     """
     try:
+        if Path(directory).exists():
+            raise FileExistsError(
+                f"Repository directory, already exists: {directory}."
+            )
         Path(directory).mkdir(parents=True, exist_ok=True)
         repo = Repo.clone_from(repo_url, str(directory))
         if branch:
             repo.git.checkout(branch)
-    except Exception as err:
-        raise Exception(f"Failed to clone repository: {repo_url}.") from err
+    except FileExistsError as err:
+        raise FileExistsError(
+            f"Failed to create repository directory: {directory}."
+        ) from err
 
 
 def pull_repo(directory: str | Path) -> None:
