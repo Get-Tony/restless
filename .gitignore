@@ -191,3 +191,5 @@ dmypy.json
 # sqlite
 **/*.sqlite
 **/*.db
+
+**/tmp_*

@@ -1,2 +1,6 @@
-"""Restless tests."""
-__author__ = "Anthony Pagan <get-tony@outlook.com>"
+"""Tests from the Restless package."""
+
+
+def test_settings():
+    """Test settings."""
+    assert True

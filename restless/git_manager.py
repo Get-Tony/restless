@@ -1,8 +1,13 @@
-"""Ansible integration for Restless."""
-__author__ = "Anthony Pagan <get-tony@outlook.com>"
+"""Ansible integration for Restless.
+
+Implements the GitPython library to manage Git repositories.
+
+Docs: https://github.com/gitpython-developers/GitPython
+"""
 
 from pathlib import Path
 
+import git
 from git.repo import Repo
 
 
@@ -47,7 +52,7 @@ def pull_repo(directory: str | Path) -> None:
 
     Raises:
         FileNotFoundError: Failed to find repository directory.
-        Exception: Failed to pull repository
+        InvalidGitRepositoryError: Failed to pull repository
     """
     try:
         repo = Repo(str(directory))
@@ -56,8 +61,10 @@ def pull_repo(directory: str | Path) -> None:
         raise FileNotFoundError(
             f"Failed to find repository directory: {directory}."
         ) from err
-    except Exception as err:
-        raise Exception(f"Failed to pull repository: {directory}.") from err
+    except git.InvalidGitRepositoryError as err:
+        raise git.InvalidGitRepositoryError(
+            f"Failed to pull repository: {directory}."
+        ) from err
 
 
 def push_repo(directory: str | Path) -> None:
@@ -69,7 +76,7 @@ def push_repo(directory: str | Path) -> None:
 
     Raises:
         FileNotFoundError: Failed to find repository directory.
-        Exception: Failed to push repository
+        GitCommandError: Failed to push repository
     """
     try:
         repo = Repo(str(directory))
@@ -78,8 +85,10 @@ def push_repo(directory: str | Path) -> None:
         raise FileNotFoundError(
             f"Failed to find repository directory: {directory}."
         ) from err
-    except Exception as err:
-        raise Exception(f"Failed to push repository: {directory}.") from err
+    except git.GitCommandError as err:
+        raise git.GitCommandError(
+            f"Failed to push repository: {directory}."
+        ) from err
 
 
 def commit_repo(directory: str | Path, message: str) -> None:
@@ -92,7 +101,7 @@ def commit_repo(directory: str | Path, message: str) -> None:
 
     Raises:
         FileNotFoundError: Failed to find repository directory.
-        Exception: Failed to commit repository
+        GitCommandError: Failed to commit repository
     """
     try:
         repo = Repo(str(directory))
@@ -102,8 +111,10 @@ def commit_repo(directory: str | Path, message: str) -> None:
         raise FileNotFoundError(
             f"Failed to find repository directory: {directory}."
         ) from err
-    except Exception as err:
-        raise Exception(f"Failed to commit repository: {directory}.") from err
+    except git.GitCommandError as err:
+        raise git.GitCommandError(
+            f"Failed to commit repository: {directory}."
+        ) from err
 
 
 def repo_obj_from_dir(directory: str | Path) -> Repo:
@@ -115,7 +126,7 @@ def repo_obj_from_dir(directory: str | Path) -> Repo:
 
     Raises:
         FileNotFoundError: Failed to find repository directory.
-        Exception: Failed to get repository
+        GitCommandError: Failed to get repository
 
     Returns:
         Repo: Git repository
@@ -126,5 +137,11 @@ def repo_obj_from_dir(directory: str | Path) -> Repo:
         raise FileNotFoundError(
             f"Failed to find repository directory: {directory}."
         ) from err
-    except Exception as err:
-        raise Exception(f"Failed to get repository: {directory}.") from err
+    except git.InvalidGitRepositoryError as err:
+        raise git.InvalidGitRepositoryError(
+            f"Failed to get repository: {directory}."
+        ) from err
+    except git.GitCommandError as err:
+        raise git.GitCommandError(
+            f"Failed to get repository: {directory}."
+        ) from err

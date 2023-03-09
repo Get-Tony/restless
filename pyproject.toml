@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "restless"
-version = "0.1.1"
-description = "Ansible interactions"
+version = "0.1.9"
+description = "Ansible process control."
 authors = ["Get-Tony <Get-Tony@outlook.com>"]
 license = "MIT"
 readme = "README.md"
@@ -13,21 +13,18 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-ansible = "^7.1.0"
+ansible = "^7.3.0"
 ansible-runner = "^2.3.1"
 ansible-builder = "^1.2.0"
-lib_standard = { git = "https://github.com/Get-Tony/lib_standard.git", branch = "main" }
 gitpython = "^3.1.30"
+pydantic = {extras = ["dotenv", "email"], version = "^1.10.6"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.12.0"
-ipykernel = "^6.20.2"
+ruff = "^0.0.254"
 mypy = "^0.991"
-pylint = "^2.15.10"
+black = "^22.12.0"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
-pydocstyle = "^6.3.0"
-pycodestyle = "^2.10.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,2 +1,2 @@
 """Restless."""
-__author__ = "Anthony Pagan <get-tony@outlook.com>"
+__author__ = "Anthony Pagan <Get-Tony@outlook.com>"
