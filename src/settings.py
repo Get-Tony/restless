@@ -16,3 +16,6 @@ class Settings(BaseSettings):
 
         env_file = ".env"
         env_file_encoding = FILE_ENCODING
+
+
+settings = Settings()

@@ -193,3 +193,10 @@ dmypy.json
 **/*.db
 
 **/tmp_*
+
+# Ansible
+**/ansible.cfg
+**/ansible.cfg.bak
+**/ansible.cfg.orig
+**/inventory/*
+**/*secret*.*

@@ -1,6 +1,6 @@
 # Restless
 
-An process management tool.
+A process management tool.
 
 - [Restless](#restless)
   - [License](#license)
@@ -16,16 +16,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Requirements
 
 - Python 3.10.0 (or higher)
-- Ansible 7.1.0 (or higher)
-- lib_standard 1.2.5 (or higher) - see [github.com/get-tony/lib_standard](https://github.com/get-tony/lib_standard)
 
 ## Installation
 
+From the root directory of the package (where the README file is found), run:
+
 ### For development
 
-From the root directory of the package (where the README file is found), run:
-> ```pip install -r requirements/dev.txt```
+```pip install -e .[dev]```
+or
+```make dev```
 
 ### For production
 
-> ```pip install -r requirements/prod.txt```
+```pip install .```
+or
+```make```
